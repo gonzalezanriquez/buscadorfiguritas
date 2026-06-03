@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scanner de Figuritas Mundial 2026</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(255,255,255,0.10) 0 26%, transparent 27%),
+        radial-gradient(circle at 0% 95%, rgba(255,255,255,0.08) 0 30%, transparent 31%),
+        linear-gradient(135deg, #4b0710, #7b1520 55%, #4b0710);
+      padding: 18px;
+    }
+
+    .app {
+      max-width: 780px;
+      margin: auto;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin: 16px 0 26px;
+    }
+
+    .logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      padding: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 9vw, 72px);
+      line-height: .9;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .subtitulo {
+      margin: 8px 0 0;
+      color: #f5c8c0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .panel {
+      background: rgba(255,255,255,.96);
+      color: #4b0710;
+      border-radius: 28px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.28);
+    }
+
+    .scanner-box {
+      overflow: hidden;
+      border-radius: 24px;
+      background: #1b080b;
+      border: 3px solid #f0a092;
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    video {
+      width: 100%;
+      display: none;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+
+    .scan-placeholder {
+      padding: 26px;
+      text-align: center;
+      color: #f7e6e3;
+      line-height: 1.5;
+    }
+
+    .scan-line {
+      position: absolute;
+      width: 80%;
+      height: 3px;
+      background: #ffffff;
+      box-shadow: 0 0 15px #fff;
+      top: 20%;
+      left: 10%;
+      display: none;
+      animation: scan 2s infinite alternate ease-in-out;
+    }
+
+    @keyframes scan {
+      from { top: 20%; }
+      to { top: 78%; }
+    }
+
+    .acciones {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 15px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #7b1520;
+      color: white;
+    }
+
+    button.secundario {
+      background: #f0a092;
+      color: #4b0710;
+    }
+
+    button.blanco {
+      background: white;
+      color: #7b1520;
+      border: 2px solid #f0a092;
+    }
+
+    button.peligro {
+      background: #991b1b;
+    }
+
+    .buscador {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      border: 0;
+      outline: none;
+      border-radius: 999px;
+      padding: 16px 18px;
+      font-size: 16px;
+      background: #fff4f2;
+      color: #4b0710;
+    }
+
+    .resultado {
+      margin-top: 16px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 2px solid #f0a092;
+      display: none;
+    }
+
+    .resultado-header {
+      background: #f0a092;
+      color: #4b0710;
+      padding: 16px;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .resultado-body {
+      padding: 16px;
+      background: white;
+    }
+
+    .dato {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid #f0d0ca;
+      padding: 11px 0;
+      font-size: 16px;
+    }
+
+    .dato:last-child { border-bottom: 0; }
+    .dato span:first-child { font-weight: 900; }
+
+    .estado {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .tengo { background: #dcfce7; color: #166534; }
+    .falta { background: #fee2e2; color: #991b1b; }
+    .repetida { background: #fef3c7; color: #92400e; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      background: #fff4f2;
+      border-radius: 20px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 30px;
+      color: #7b1520;
+    }
+
+    .lista {
+      max-height: 360px;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .item {
+      background: #fff4f2;
+      border-radius: 18px;
+      padding: 13px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .item small {
+      display: block;
+      color: #7b1520;
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .tabs button {
+      padding: 10px 14px;
+      font-size: 13px;
+    }
+
+    .nota {
+      color: #6b1320;
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 12px;
+    }
+
+    @media(max-width: 560px) {
+      body { padding: 14px; }
+      .hero { gap: 12px; }
+      .logo { width: 72px; height: 72px; }
+      h1 { font-size: 42px; }
+      .acciones, .stats { grid-template-columns: 1fr; }
+      .buscador { flex-direction: column; }
+      .panel { padding: 15px; border-radius: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <img src="logo.png" class="logo" alt="Logo Mundial 2026" onerror="this.style.display='none'">
+      <div>
+        <h1>FIFA 2026</h1>
+        <p class="subtitulo">Scanner de figuritas</p>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="scanner-box">
+        <video id="video" autoplay playsinline></video>
+        <div class="scan-line" id="scanLine"></div>
+        <div class="scan-placeholder" id="placeholder">
+          Activá la cámara y acercá la figurita. En esta primera versión, el reconocimiento automático funciona mejor si la figurita tiene un código QR o código visible. También podés cargar el código manualmente.
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button onclick="iniciarCamara()">Activar cámara</button>
+        <button class="secundario" onclick="detenerCamara()">Detener cámara</button>
+      </div>
+
+      <div class="buscador">
+        <input id="busqueda" type="text" placeholder="Código, país o jugador. Ej: ARG-01" oninput="buscarFigurita()">
+        <button onclick="buscarFigurita()">Buscar</button>
+      </div>
+
+      <div id="resultado" class="resultado"></div>
+
+      <p class="nota">
+        Para que el escaneo sea 100% automático por imagen real, hay que cargar una foto de referencia de cada figurita y entrenar/comparar visualmente. Esta versión ya deja armada la lógica de colección y reconocimiento por código.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="stats">
+        <div class="stat"><strong id="totalTengo">0</strong>Tengo</div>
+        <div class="stat"><strong id="totalFaltan">0</strong>Faltan</div>
+        <div class="stat"><strong id="totalRepetidas">0</strong>Repetidas</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="tabs">
+        <button onclick="mostrarLista('todas')">Todas</button>
+        <button onclick="mostrarLista('faltan')">Faltantes</button>
+        <button onclick="mostrarLista('tengo')">Tengo</button>
+        <button onclick="mostrarLista('repetidas')">Repetidas</button>
+      </div>
+
+      <select id="filtroPais" onchange="renderLista()">
+        <option value="">Todos los países</option>
+      </select>
+
+      <div id="lista" class="lista"></div>
+
+      <div class="acciones">
+        <button class="blanco" onclick="exportarDatos()">Exportar datos</button>
+        <button class="peligro" onclick="reiniciarAlbum()">Reiniciar álbum</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const figuritas = [
+      { codigo: "ARG-01", pais: "Argentina", jugador: "Escudo Argentina", pagina: 82, bandera: "🇦🇷" },
+      { codigo: "ARG-02", pais: "Argentina", jugador: "Lionel Messi", pagina: 82, bandera: "🇦🇷" },
+      { codigo: "ARG-03", pais: "Argentina", jugador: "Emiliano Martínez", pagina: 82, bandera: "🇦🇷" },
+      { codigo: "ARG-04", pais: "Argentina", jugador: "Julián Álvarez", pagina: 82, bandera: "🇦🇷" },
+      { codigo: "BRA-01", pais: "Brazil", jugador: "Escudo Brazil", pagina: 24, bandera: "🇧🇷" },
+      { codigo: "BRA-02", pais: "Brazil", jugador: "Vinícius Jr.", pagina: 24, bandera: "🇧🇷" },
+      { codigo: "BRA-03", pais: "Brazil", jugador: "Rodrygo", pagina: 24, bandera: "🇧🇷" },
+      { codigo: "FRA-01", pais: "France", jugador: "Escudo France", pagina: 74, bandera: "🇫🇷" },
+      { codigo: "FRA-02", pais: "France", jugador: "Kylian Mbappé", pagina: 74, bandera: "🇫🇷" },
+      { codigo: "ESP-01", pais: "Spain", jugador: "Escudo Spain", pagina: 66, bandera: "🇪🇸" },
+      { codigo: "ESP-02", pais: "Spain", jugador: "Lamine Yamal", pagina: 66, bandera: "🇪🇸" },
+      { codigo: "POR-01", pais: "Portugal", jugador: "Escudo Portugal", pagina: 90, bandera: "🇵🇹" },
+      { codigo: "POR-02", pais: "Portugal", jugador: "Cristiano Ronaldo", pagina: 90, bandera: "🇵🇹" },
+      { codigo: "MEX-01", pais: "Mexico", jugador: "Escudo Mexico", pagina: 8, bandera: "🇲🇽" },
+      { codigo: "USA-01", pais: "USA", jugador: "Escudo USA", pagina: 32, bandera: "🇺🇸" },
+      { codigo: "URU-01", pais: "Uruguay", jugador: "Escudo Uruguay", pagina: 72, bandera: "🇺🇾" },
+      { codigo: "COL-01", pais: "Colombia", jugador: "Escudo Colombia", pagina: 96, bandera: "🇨🇴" },
+      { codigo: "GER-01", pais: "Germany", jugador: "Escudo Germany", pagina: 40, bandera: "🇩🇪" },
+      { codigo: "ENG-01", pais: "England", jugador: "Escudo England", pagina: 98, bandera: "🏴" },
+      { codigo: "JPN-01", pais: "Japan", jugador: "Escudo Japan", pagina: 50, bandera: "🇯🇵" }
+    ];
+
+    let coleccion = JSON.parse(localStorage.getItem("coleccionMundial2026")) || {};
+    let stream = null;
+    let modoLista = "todas";
+    let detectorActivo = false;
+
+    const video = document.getElementById("video");
+    const placeholder = document.getElementById("placeholder");
+    const scanLine = document.getElementById("scanLine");
+
+    function guardar() {
+      localStorage.setItem("coleccionMundial2026", JSON.stringify(coleccion));
+      actualizarStats();
+      renderLista();
+    }
+
+    function normalizar(texto) {
+      return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    async function iniciarCamara() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+        video.srcObject = stream;
+        video.style.display = "block";
+        placeholder.style.display = "none";
+        scanLine.style.display = "block";
+
+        if ("BarcodeDetector" in window) {
+          detectarCodigo();
+        } else {
+          alert("Tu navegador no tiene BarcodeDetector. Podés usar el buscador manual por código, país o jugador.");
+        }
+      } catch (error) {
+        alert("No se pudo acceder a la cámara. Revisá los permisos del navegador.");
+      }
+    }
+
+    function detenerCamara() {
+      detectorActivo = false;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      video.style.display = "none";
+      placeholder.style.display = "block";
+      scanLine.style.display = "none";
+    }
+
+    async function detectarCodigo() {
+      detectorActivo = true;
+      const detector = new BarcodeDetector({ formats: ["qr_code", "ean_13", "code_128", "code_39"] });
+
+      while (detectorActivo && video.readyState >= 2) {
+        try {
+          const codigos = await detector.detect(video);
+          if (codigos.length > 0) {
+            const valor = codigos[0].rawValue.trim();
+            document.getElementById("busqueda").value = valor;
+            buscarFigurita();
+            marcarTengoDesdeScanner();
+            await esperar(1500);
+          }
+        } catch (e) {}
+        await esperar(500);
+      }
+    }
+
+    function esperar(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function buscarFigurita() {
+      const textoOriginal = document.getElementById("busqueda").value.trim();
+      const texto = normalizar(textoOriginal);
+      const resultado = document.getElementById("resultado");
+
+      if (!texto) {
+        resultado.style.display = "none";
+        return null;
+      }
+
+      const fig = figuritas.find(f =>
+        normalizar(f.codigo).includes(texto) ||
+        normalizar(f.pais).includes(texto) ||
+        normalizar(f.jugador).includes(texto)
+      );
+
+      resultado.style.display = "block";
+
+      if (!fig) {
+        resultado.innerHTML = `
+          <div class="resultado-header">No encontrada</div>
+          <div class="resultado-body">No hay una figurita cargada con el dato: <strong>${textoOriginal}</strong>.</div>
+        `;
+        return null;
+      }
+
+      const estado = coleccion[fig.codigo]?.estado || "falta";
+      const repetidas = coleccion[fig.codigo]?.repetidas || 0;
+
+      resultado.innerHTML = `
+        <div class="resultado-header">${fig.bandera} ${fig.jugador}</div>
+        <div class="resultado-body">
+          <div class="dato"><span>Código</span><strong>${fig.codigo}</strong></div>
+          <div class="dato"><span>País</span><strong>${fig.pais}</strong></div>
+          <div class="dato"><span>Página</span><strong>${fig.pagina}</strong></div>
+          <div class="dato"><span>Estado</span><strong class="estado ${estado}">${textoEstado(estado)}</strong></div>
+          <div class="dato"><span>Repetidas</span><strong>${repetidas}</strong></div>
+          <div class="acciones">
+            <button onclick="marcarTengo('${fig.codigo}')">La tengo</button>
+            <button class="secundario" onclick="sumarRepetida('${fig.codigo}')">Repetida +1</button>
+            <button class="blanco" onclick="marcarFalta('${fig.codigo}')">Me falta</button>
+          </div>
+        </div>
+      `;
+
+      return fig;
+    }
+
+    function marcarTengoDesdeScanner() {
+      const fig = buscarFigurita();
+      if (fig) marcarTengo(fig.codigo);
+    }
+
+    function marcarTengo(codigo) {
+      coleccion[codigo] = coleccion[codigo] || { estado: "falta", repetidas: 0 };
+      coleccion[codigo].estado = "tengo";
+      guardar();
+      buscarFigurita();
+    }
+
+    function sumarRepetida(codigo) {
+      coleccion[codigo] = coleccion[codigo] || { estado: "tengo", repetidas: 0 };
+      coleccion[codigo].estado = "repetida";
+      coleccion[codigo].repetidas++;
+      guardar();
+      buscarFigurita();
+    }
+
+    function marcarFalta(codigo) {
+      coleccion[codigo] = { estado: "falta", repetidas: 0 };
+      guardar();
+      buscarFigurita();
+    }
+
+    function textoEstado(estado) {
+      if (estado === "tengo") return "LA TENGO";
+      if (estado === "repetida") return "REPETIDA";
+      return "ME FALTA";
+    }
+
+    function actualizarStats() {
+      const tengo = figuritas.filter(f => coleccion[f.codigo]?.estado === "tengo" || coleccion[f.codigo]?.estado === "repetida").length;
+      const faltan = figuritas.length - tengo;
+      const repetidas = Object.values(coleccion).reduce((acc, item) => acc + (item.repetidas || 0), 0);
+
+      document.getElementById("totalTengo").textContent = tengo;
+      document.getElementById("totalFaltan").textContent = faltan;
+      document.getElementById("totalRepetidas").textContent = repetidas;
+    }
+
+    function mostrarLista(modo) {
+      modoLista = modo;
+      renderLista();
+    }
+
+    function renderLista() {
+      const lista = document.getElementById("lista");
+      const pais = document.getElementById("filtroPais").value;
+
+      let datos = figuritas.filter(f => !pais || f.pais === pais);
+
+      if (modoLista === "faltan") {
+        datos = datos.filter(f => !(coleccion[f.codigo]?.estado === "tengo" || coleccion[f.codigo]?.estado === "repetida"));
+      }
+      if (modoLista === "tengo") {
+        datos = datos.filter(f => coleccion[f.codigo]?.estado === "tengo" || coleccion[f.codigo]?.estado === "repetida");
+      }
+      if (modoLista === "repetidas") {
+        datos = datos.filter(f => (coleccion[f.codigo]?.repetidas || 0) > 0);
+      }
+
+      lista.innerHTML = datos.map(f => {
+        const estado = coleccion[f.codigo]?.estado || "falta";
+        const repetidas = coleccion[f.codigo]?.repetidas || 0;
+        return `
+          <div class="item">
+            <div>
+              <strong>${f.bandera} ${f.codigo} · ${f.jugador}</strong>
+              <small>${f.pais} · Página ${f.pagina} · Repetidas: ${repetidas}</small>
+            </div>
+            <span class="estado ${estado}">${textoEstado(estado)}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function cargarPaises() {
+      const select = document.getElementById("filtroPais");
+      const paises = [...new Set(figuritas.map(f => f.pais))].sort();
+      paises.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p;
+        option.textContent = p;
+        select.appendChild(option);
+      });
+    }
+
+    function exportarDatos() {
+      const salida = figuritas.map(f => ({
+        codigo: f.codigo,
+        pais: f.pais,
+        jugador: f.jugador,
+        pagina: f.pagina,
+        estado: coleccion[f.codigo]?.estado || "falta",
+        repetidas: coleccion[f.codigo]?.repetidas || 0
+      }));
+
+      const blob = new Blob([JSON.stringify(salida, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "mi_album_mundial_2026.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function reiniciarAlbum() {
+      if (confirm("¿Seguro que querés borrar todo el progreso del álbum?")) {
+        coleccion = {};
+        guardar();
+        document.getElementById("busqueda").value = "";
+        document.getElementById("resultado").style.display = "none";
+      }
+    }
+
+    cargarPaises();
+    actualizarStats();
+    renderLista();
+  </script>
+</body>
+</html>
