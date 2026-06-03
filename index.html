@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscador Mundial 2026</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f766e;
+      color: white;
+      padding: 30px;
+    }
+
+    .contenedor {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      color: #111;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      text-align: center;
+      color: #0f766e;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .resultado {
+      padding: 15px;
+      border-radius: 10px;
+      background: #e0f2f1;
+      font-size: 18px;
+      display: none;
+    }
+
+    .no-encontrado {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    strong {
+      color: #0f766e;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <h1>Buscador de páginas</h1>
+
+    <input 
+      type="text" 
+      id="busqueda" 
+      placeholder="Buscar por país o código: ARG, Argentina, BRA..."
+      oninput="buscarEquipo()"
+    >
+
+    <div id="resultado" class="resultado"></div>
+  </div>
+
+  <script>
+    const equipos = [
+      { pagina: 8, codigo: "MEX", pais: "Mexico" },
+      { pagina: 10, codigo: "RSA", pais: "South Africa" },
+      { pagina: 12, codigo: "KOR", pais: "Korea Republic" },
+      { pagina: 14, codigo: "CZE", pais: "Czechia" },
+
+      { pagina: 16, codigo: "CAN", pais: "Canada" },
+      { pagina: 18, codigo: "BIH", pais: "Bosnia-Herzegovina" },
+      { pagina: 20, codigo: "QAT", pais: "Qatar" },
+      { pagina: 22, codigo: "SUI", pais: "Switzerland" },
+
+      { pagina: 24, codigo: "BRA", pais: "Brazil" },
+      { pagina: 26, codigo: "MAR", pais: "Morocco" },
+      { pagina: 28, codigo: "HAI", pais: "Haiti" },
+      { pagina: 30, codigo: "SCO", pais: "Scotland" },
+
+      { pagina: 32, codigo: "USA", pais: "USA" },
+      { pagina: 34, codigo: "PAR", pais: "Paraguay" },
+      { pagina: 36, codigo: "AUS", pais: "Australia" },
+      { pagina: 38, codigo: "TUR", pais: "Türkiye" },
+
+      { pagina: 40, codigo: "GER", pais: "Germany" },
+      { pagina: 42, codigo: "CUW", pais: "Curaçao" },
+      { pagina: 44, codigo: "CIV", pais: "Côte d’Ivoire" },
+      { pagina: 46, codigo: "ECU", pais: "Ecuador" },
+
+      { pagina: 48, codigo: "NED", pais: "Netherlands" },
+      { pagina: 50, codigo: "JPN", pais: "Japan" },
+      { pagina: 52, codigo: "SWE", pais: "Sweden" },
+      { pagina: 54, codigo: "TUN", pais: "Tunisia" },
+
+      { pagina: 58, codigo: "BEL", pais: "Belgium" },
+      { pagina: 60, codigo: "EGY", pais: "Egypt" },
+      { pagina: 62, codigo: "IRN", pais: "IR Iran" },
+      { pagina: 64, codigo: "NZL", pais: "New Zealand" },
+
+      { pagina: 66, codigo: "ESP", pais: "Spain" },
+      { pagina: 68, codigo: "CPV", pais: "Cabo Verde" },
+      { pagina: 70, codigo: "KSA", pais: "Saudi Arabia" },
+      { pagina: 72, codigo: "URU", pais: "Uruguay" },
+
+      { pagina: 74, codigo: "FRA", pais: "France" },
+      { pagina: 76, codigo: "SEN", pais: "Senegal" },
+      { pagina: 78, codigo: "IRQ", pais: "Iraq" },
+      { pagina: 80, codigo: "NOR", pais: "Norway" },
+
+      { pagina: 82, codigo: "ARG", pais: "Argentina" },
+      { pagina: 84, codigo: "ALG", pais: "Algeria" },
+      { pagina: 86, codigo: "AUT", pais: "Austria" },
+      { pagina: 88, codigo: "JOR", pais: "Jordan" },
+
+      { pagina: 90, codigo: "POR", pais: "Portugal" },
+      { pagina: 92, codigo: "COD", pais: "Congo DR" },
+      { pagina: 94, codigo: "UZB", pais: "Uzbekistan" },
+      { pagina: 96, codigo: "COL", pais: "Colombia" },
+
+      { pagina: 98, codigo: "ENG", pais: "England" },
+      { pagina: 100, codigo: "CRO", pais: "Croatia" },
+      { pagina: 102, codigo: "GHA", pais: "Ghana" },
+      { pagina: 104, codigo: "PAN", pais: "Panama" }
+    ];
+
+    function normalizar(texto) {
+      return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function buscarEquipo() {
+      const valor = normalizar(document.getElementById("busqueda").value.trim());
+      const resultado = document.getElementById("resultado");
+
+      if (valor === "") {
+        resultado.style.display = "none";
+        return;
+      }
+
+      const equipo = equipos.find(e =>
+        normalizar(e.codigo).startsWith(valor) ||
+        normalizar(e.pais).includes(valor)
+      );
+
+      resultado.style.display = "block";
+
+      if (equipo) {
+        resultado.className = "resultado";
+        resultado.innerHTML = `
+          <p><strong>País:</strong> ${equipo.pais}</p>
+          <p><strong>Código:</strong> ${equipo.codigo}</p>
+          <p><strong>Página:</strong> ${equipo.pagina}</p>
+        `;
+      } else {
+        resultado.className = "resultado no-encontrado";
+        resultado.innerHTML = "No se encontró ese país o código.";
+      }
+    }
+  </script>
+
+</body>
+</html>
