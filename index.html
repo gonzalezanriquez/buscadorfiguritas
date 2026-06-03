@@ -1,134 +1,316 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buscador Mundial 2026</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f766e;
-      color: white;
-      padding: 30px;
+    * {
+      box-sizing: border-box;
     }
 
-    .contenedor {
-      max-width: 500px;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(255,255,255,0.08) 0 28%, transparent 29%),
+        radial-gradient(circle at 95% 85%, rgba(255,255,255,0.06) 0 35%, transparent 36%),
+        linear-gradient(135deg, #4b0710, #7b1520 55%, #4b0710);
+      padding: 22px;
+    }
+
+    .app {
+      max-width: 520px;
       margin: auto;
-      background: white;
-      color: #111;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .header {
+      padding: 34px 0 28px;
+    }
+
+    .logo-mundial {
+      width: 115px;
+      display: block;
+      margin-bottom: 30px;
+      border-radius: 18px;
     }
 
     h1 {
-      text-align: center;
-      color: #0f766e;
+      margin: 0;
+      font-size: clamp(42px, 13vw, 68px);
+      line-height: 0.95;
+      font-weight: 400;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      color: #f4b6a9;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 22px;
+      margin-bottom: 14px;
+    }
+
+    .subtitulo {
+      margin-top: 24px;
+      max-width: 430px;
+      font-size: 20px;
+      line-height: 1.45;
+      color: #f8e8e5;
+    }
+
+    .card {
+      background: transparent;
+      padding: 0;
+      margin-top: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 10px;
+      color: #f8d8d1;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
     }
 
     input {
       width: 100%;
-      padding: 14px;
+      padding: 19px 22px;
       font-size: 18px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      color: #64101a;
+      background: white;
+    }
+
+    input::placeholder {
+      color: #9b6b70;
+    }
+
+    .ayuda {
+      font-size: 14px;
+      margin: 14px 4px 0;
+      color: #f2c5bd;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .chip {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      background: #ffffff;
+      color: #6b1320;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
     }
 
     .resultado {
-      padding: 15px;
-      border-radius: 10px;
-      background: #e0f2f1;
-      font-size: 18px;
       display: none;
+      margin-top: 24px;
+      background: rgba(255,255,255,0.96);
+      color: #59101a;
+      border-radius: 28px;
+      overflow: hidden;
     }
 
-    .no-encontrado {
-      background: #fee2e2;
-      color: #991b1b;
+    .resultado-header {
+      padding: 18px 22px;
+      background: #f0a092;
+      color: #59101a;
+      font-size: 22px;
+      font-weight: 800;
     }
 
-    strong {
-      color: #0f766e;
+    .resultado-body {
+      padding: 20px 22px;
+    }
+
+    .dato {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid #edd0cb;
+      font-size: 18px;
+    }
+
+    .dato:last-child {
+      border-bottom: none;
+    }
+
+    .dato span:first-child {
+      color: #7b1520;
+      font-weight: 700;
+    }
+
+    .pagina {
+      font-size: 46px;
+      font-weight: 900;
+      color: #7b1520;
+    }
+
+    .no-encontrado .resultado-header {
+      background: #7b1520;
+      color: white;
+    }
+
+    .footer {
+      margin-top: 34px;
+      color: #f2c5bd;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 390px) {
+      body {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .subtitulo {
+        font-size: 18px;
+      }
+
+      .chip {
+        flex: 1;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <div class="contenedor">
-    <h1>Buscador de páginas</h1>
+  <main class="app">
 
-    <input 
-      type="text" 
-      id="busqueda" 
-      placeholder="Buscar por país o código: ARG, Argentina, BRA..."
-      oninput="buscarEquipo()"
-    >
+    <section class="header">
+      <img 
+        src="logo.png" 
+        class="logo-mundial" 
+        alt="Logo Mundial 2026"
+      >
 
-    <div id="resultado" class="resultado"></div>
-  </div>
+      <h1>FIFA WORLD CUP 2026</h1>
+
+      <div class="badge">Buscador de páginas</div>
+
+      <p class="subtitulo">
+        Consultá rápidamente por país o por código de tres letras.
+      </p>
+    </section>
+
+    <section class="card">
+      <label for="busqueda">Buscar selección</label>
+
+      <input
+        type="text"
+        id="busqueda"
+        placeholder="Ej: ARG, Argentina, BRA..."
+        autocomplete="off"
+        oninput="buscarEquipo()"
+      />
+
+      <p class="ayuda">
+        Escribí el país completo, parte del nombre o el código FIFA.
+      </p>
+
+      <div id="resultado" class="resultado"></div>
+
+      <div class="chips">
+        <button class="chip" onclick="buscarRapido('ARG')">ARG</button>
+        <button class="chip" onclick="buscarRapido('BRA')">BRA</button>
+        <button class="chip" onclick="buscarRapido('MEX')">MEX</button>
+        <button class="chip" onclick="buscarRapido('USA')">USA</button>
+        <button class="chip" onclick="buscarRapido('ESP')">ESP</button>
+        <button class="chip" onclick="buscarRapido('FRA')">FRA</button>
+      </div>
+    </section>
+
+    <p class="footer">
+      Álbum Mundial 2026 · Canadá · México · Estados Unidos
+    </p>
+
+  </main>
 
   <script>
     const equipos = [
-      { pagina: 8, codigo: "MEX", pais: "Mexico" },
-      { pagina: 10, codigo: "RSA", pais: "South Africa" },
-      { pagina: 12, codigo: "KOR", pais: "Korea Republic" },
-      { pagina: 14, codigo: "CZE", pais: "Czechia" },
+      { pagina: 8, codigo: "MEX", pais: "Mexico", bandera: "🇲🇽" },
+      { pagina: 10, codigo: "RSA", pais: "South Africa", bandera: "🇿🇦" },
+      { pagina: 12, codigo: "KOR", pais: "Korea Republic", bandera: "🇰🇷" },
+      { pagina: 14, codigo: "CZE", pais: "Czechia", bandera: "🇨🇿" },
 
-      { pagina: 16, codigo: "CAN", pais: "Canada" },
-      { pagina: 18, codigo: "BIH", pais: "Bosnia-Herzegovina" },
-      { pagina: 20, codigo: "QAT", pais: "Qatar" },
-      { pagina: 22, codigo: "SUI", pais: "Switzerland" },
+      { pagina: 16, codigo: "CAN", pais: "Canada", bandera: "🇨🇦" },
+      { pagina: 18, codigo: "BIH", pais: "Bosnia-Herzegovina", bandera: "🇧🇦" },
+      { pagina: 20, codigo: "QAT", pais: "Qatar", bandera: "🇶🇦" },
+      { pagina: 22, codigo: "SUI", pais: "Switzerland", bandera: "🇨🇭" },
 
-      { pagina: 24, codigo: "BRA", pais: "Brazil" },
-      { pagina: 26, codigo: "MAR", pais: "Morocco" },
-      { pagina: 28, codigo: "HAI", pais: "Haiti" },
-      { pagina: 30, codigo: "SCO", pais: "Scotland" },
+      { pagina: 24, codigo: "BRA", pais: "Brazil", bandera: "🇧🇷" },
+      { pagina: 26, codigo: "MAR", pais: "Morocco", bandera: "🇲🇦" },
+      { pagina: 28, codigo: "HAI", pais: "Haiti", bandera: "🇭🇹" },
+      { pagina: 30, codigo: "SCO", pais: "Scotland", bandera: "🏴" },
 
-      { pagina: 32, codigo: "USA", pais: "USA" },
-      { pagina: 34, codigo: "PAR", pais: "Paraguay" },
-      { pagina: 36, codigo: "AUS", pais: "Australia" },
-      { pagina: 38, codigo: "TUR", pais: "Türkiye" },
+      { pagina: 32, codigo: "USA", pais: "USA", bandera: "🇺🇸" },
+      { pagina: 34, codigo: "PAR", pais: "Paraguay", bandera: "🇵🇾" },
+      { pagina: 36, codigo: "AUS", pais: "Australia", bandera: "🇦🇺" },
+      { pagina: 38, codigo: "TUR", pais: "Türkiye", bandera: "🇹🇷" },
 
-      { pagina: 40, codigo: "GER", pais: "Germany" },
-      { pagina: 42, codigo: "CUW", pais: "Curaçao" },
-      { pagina: 44, codigo: "CIV", pais: "Côte d’Ivoire" },
-      { pagina: 46, codigo: "ECU", pais: "Ecuador" },
+      { pagina: 40, codigo: "GER", pais: "Germany", bandera: "🇩🇪" },
+      { pagina: 42, codigo: "CUW", pais: "Curaçao", bandera: "🇨🇼" },
+      { pagina: 44, codigo: "CIV", pais: "Côte d’Ivoire", bandera: "🇨🇮" },
+      { pagina: 46, codigo: "ECU", pais: "Ecuador", bandera: "🇪🇨" },
 
-      { pagina: 48, codigo: "NED", pais: "Netherlands" },
-      { pagina: 50, codigo: "JPN", pais: "Japan" },
-      { pagina: 52, codigo: "SWE", pais: "Sweden" },
-      { pagina: 54, codigo: "TUN", pais: "Tunisia" },
+      { pagina: 48, codigo: "NED", pais: "Netherlands", bandera: "🇳🇱" },
+      { pagina: 50, codigo: "JPN", pais: "Japan", bandera: "🇯🇵" },
+      { pagina: 52, codigo: "SWE", pais: "Sweden", bandera: "🇸🇪" },
+      { pagina: 54, codigo: "TUN", pais: "Tunisia", bandera: "🇹🇳" },
 
-      { pagina: 58, codigo: "BEL", pais: "Belgium" },
-      { pagina: 60, codigo: "EGY", pais: "Egypt" },
-      { pagina: 62, codigo: "IRN", pais: "IR Iran" },
-      { pagina: 64, codigo: "NZL", pais: "New Zealand" },
+      { pagina: 58, codigo: "BEL", pais: "Belgium", bandera: "🇧🇪" },
+      { pagina: 60, codigo: "EGY", pais: "Egypt", bandera: "🇪🇬" },
+      { pagina: 62, codigo: "IRN", pais: "IR Iran", bandera: "🇮🇷" },
+      { pagina: 64, codigo: "NZL", pais: "New Zealand", bandera: "🇳🇿" },
 
-      { pagina: 66, codigo: "ESP", pais: "Spain" },
-      { pagina: 68, codigo: "CPV", pais: "Cabo Verde" },
-      { pagina: 70, codigo: "KSA", pais: "Saudi Arabia" },
-      { pagina: 72, codigo: "URU", pais: "Uruguay" },
+      { pagina: 66, codigo: "ESP", pais: "Spain", bandera: "🇪🇸" },
+      { pagina: 68, codigo: "CPV", pais: "Cabo Verde", bandera: "🇨🇻" },
+      { pagina: 70, codigo: "KSA", pais: "Saudi Arabia", bandera: "🇸🇦" },
+      { pagina: 72, codigo: "URU", pais: "Uruguay", bandera: "🇺🇾" },
 
-      { pagina: 74, codigo: "FRA", pais: "France" },
-      { pagina: 76, codigo: "SEN", pais: "Senegal" },
-      { pagina: 78, codigo: "IRQ", pais: "Iraq" },
-      { pagina: 80, codigo: "NOR", pais: "Norway" },
+      { pagina: 74, codigo: "FRA", pais: "France", bandera: "🇫🇷" },
+      { pagina: 76, codigo: "SEN", pais: "Senegal", bandera: "🇸🇳" },
+      { pagina: 78, codigo: "IRQ", pais: "Iraq", bandera: "🇮🇶" },
+      { pagina: 80, codigo: "NOR", pais: "Norway", bandera: "🇳🇴" },
 
-      { pagina: 82, codigo: "ARG", pais: "Argentina" },
-      { pagina: 84, codigo: "ALG", pais: "Algeria" },
-      { pagina: 86, codigo: "AUT", pais: "Austria" },
-      { pagina: 88, codigo: "JOR", pais: "Jordan" },
+      { pagina: 82, codigo: "ARG", pais: "Argentina", bandera: "🇦🇷" },
+      { pagina: 84, codigo: "ALG", pais: "Algeria", bandera: "🇩🇿" },
+      { pagina: 86, codigo: "AUT", pais: "Austria", bandera: "🇦🇹" },
+      { pagina: 88, codigo: "JOR", pais: "Jordan", bandera: "🇯🇴" },
 
-      { pagina: 90, codigo: "POR", pais: "Portugal" },
-      { pagina: 92, codigo: "COD", pais: "Congo DR" },
-      { pagina: 94, codigo: "UZB", pais: "Uzbekistan" },
-      { pagina: 96, codigo: "COL", pais: "Colombia" },
+      { pagina: 90, codigo: "POR", pais: "Portugal", bandera: "🇵🇹" },
+      { pagina: 92, codigo: "COD", pais: "Congo DR", bandera: "🇨🇩" },
+      { pagina: 94, codigo: "UZB", pais: "Uzbekistan", bandera: "🇺🇿" },
+      { pagina: 96, codigo: "COL", pais: "Colombia", bandera: "🇨🇴" },
 
-      { pagina: 98, codigo: "ENG", pais: "England" },
-      { pagina: 100, codigo: "CRO", pais: "Croatia" },
-      { pagina: 102, codigo: "GHA", pais: "Ghana" },
-      { pagina: 104, codigo: "PAN", pais: "Panama" }
+      { pagina: 98, codigo: "ENG", pais: "England", bandera: "🏴" },
+      { pagina: 100, codigo: "CRO", pais: "Croatia", bandera: "🇭🇷" },
+      { pagina: 102, codigo: "GHA", pais: "Ghana", bandera: "🇬🇭" },
+      { pagina: 104, codigo: "PAN", pais: "Panama", bandera: "🇵🇦" }
     ];
 
     function normalizar(texto) {
@@ -139,7 +321,8 @@
     }
 
     function buscarEquipo() {
-      const valor = normalizar(document.getElementById("busqueda").value.trim());
+      const valorOriginal = document.getElementById("busqueda").value.trim();
+      const valor = normalizar(valorOriginal);
       const resultado = document.getElementById("resultado");
 
       if (valor === "") {
@@ -157,14 +340,40 @@
       if (equipo) {
         resultado.className = "resultado";
         resultado.innerHTML = `
-          <p><strong>País:</strong> ${equipo.pais}</p>
-          <p><strong>Código:</strong> ${equipo.codigo}</p>
-          <p><strong>Página:</strong> ${equipo.pagina}</p>
+          <div class="resultado-header">
+            ${equipo.bandera} ${equipo.pais}
+          </div>
+          <div class="resultado-body">
+            <div class="dato">
+              <span>Código</span>
+              <strong>${equipo.codigo}</strong>
+            </div>
+            <div class="dato">
+              <span>País</span>
+              <strong>${equipo.pais}</strong>
+            </div>
+            <div class="dato">
+              <span>Página</span>
+              <strong class="pagina">${equipo.pagina}</strong>
+            </div>
+          </div>
         `;
       } else {
         resultado.className = "resultado no-encontrado";
-        resultado.innerHTML = "No se encontró ese país o código.";
+        resultado.innerHTML = `
+          <div class="resultado-header">
+            No encontrado
+          </div>
+          <div class="resultado-body">
+            No se encontró "${valorOriginal}".
+          </div>
+        `;
       }
+    }
+
+    function buscarRapido(codigo) {
+      document.getElementById("busqueda").value = codigo;
+      buscarEquipo();
     }
   </script>
 
